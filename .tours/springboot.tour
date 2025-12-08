@@ -1,0 +1,11 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "SpringBoot",
+  "steps": [
+    {
+      "title": "Introduction",
+      "description": "Spring Core "
+    }
+  ],
+  "ref": "main"
+}
