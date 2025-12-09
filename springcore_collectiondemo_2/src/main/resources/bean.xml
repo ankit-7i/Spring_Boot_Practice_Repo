@@ -30,5 +30,35 @@
         </constructor-arg>
     </bean>
 
+<!-- Shopping Recommender Bean -->
+    <bean id="shoppingRecommender" class="com.example.springcore_collectiondemo_2.ShoppingRecommender">
+
+        
+        <property name="preferredCategories">
+            <array>
+                <value>Electronics</value>
+                <value>Books</value>
+            </array>
+        </property>
+
+       
+        <property name="recentViews">
+            <list>
+                <value>Laptop</value>
+                <value>Novel</value>
+            </list>
+        </property>
+
+        
+        <property name="productCategoryMap">
+            <map>
+                <entry key="Laptop" value="Electronics"/>
+                <entry key="Headphones" value="Electronics"/>
+                <entry key="Novel" value="Books"/>
+                <entry key="Comics" value="Books"/>
+                <entry key="Shoes" value="Fashion"/>
+            </map>
+        </property>
+    </bean>
 
 </beans>
