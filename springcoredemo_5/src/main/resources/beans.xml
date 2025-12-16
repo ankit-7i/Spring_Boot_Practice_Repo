@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Student Bean -->
+    <bean id="student" class="com.example.springcoredemo_5.UniversityCourseRegistration.Student">
+        <property name="studentId" value="201"/>
+        <property name="studentName" value="Rahman"/>
+    </bean>
+
+    <!-- CourseService Bean -->
+    <bean id="courseService" class="com.example.springcoredemo_5.UniversityCourseRegistration.CourseService">
+        <property name="student" ref="student"/>
+        <property name="courses">
+            <list>
+                <value>Java</value>
+                <value>Spring</value>
+                <value>SQL</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>
