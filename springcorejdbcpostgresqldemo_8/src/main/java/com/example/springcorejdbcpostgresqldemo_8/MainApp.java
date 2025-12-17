@@ -26,7 +26,7 @@ public class MainApp {
 
         ops.getAllStudents().forEach(System.out::println);
 
-        ops.deleteStudent(1);
+       // ops.deleteStudent(1);
     }
 }
 
