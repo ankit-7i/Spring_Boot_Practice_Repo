@@ -13,23 +13,23 @@ public class BookCrudOperations {
             MongoConfig.getDatabase().getCollection("books");
 
     public void addBook(Book book) {
-        collection.insertOne(new Document()
-                .append("bookId", book.bookId())
+        Document doc = new Document("bookId", book.bookId())
                 .append("title", book.title())
                 .append("author", book.author())
                 .append("category", book.category())
-                .append("availableStatus", book.availableStatus()));
+                .append("availableStatus", book.availableStatus());
 
+        collection.insertOne(doc);
         System.out.println("✅ Book added successfully");
     }
 
     public void getBookById(int bookId) {
         Document doc = collection.find(eq("bookId", bookId)).first();
-        System.out.println(doc != null ? "📘 " + doc.toJson() : "❌ Book not found");
+        System.out.println(doc != null ? doc.toJson() : "❌ Book not found");
     }
 
     public void getAllBooks() {
-        collection.find().forEach(doc -> System.out.println("📘 " + doc.toJson()));
+        collection.find().forEach(doc -> System.out.println(doc.toJson()));
     }
 
     public void updateAvailability(int bookId, boolean status) {
@@ -43,4 +43,3 @@ public class BookCrudOperations {
         System.out.println("🗑️ Book deleted");
     }
 }
-
