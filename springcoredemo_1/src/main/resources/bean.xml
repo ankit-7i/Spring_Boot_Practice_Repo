@@ -27,7 +27,7 @@
 
     <!--Bean 5-->
     <!--Setter Injection-->
-    <bean id="mileageEvaluator" class="com.example.springcoredemo_1.MilageEvaluator">
+    <bean id="mileageEvaluator" class="com.example.springcoredemo_1b.MilageEvaluator">
         <property name="distance" value="450"/>
         <property name="fuelUsed" value="25"/>
     </bean>
