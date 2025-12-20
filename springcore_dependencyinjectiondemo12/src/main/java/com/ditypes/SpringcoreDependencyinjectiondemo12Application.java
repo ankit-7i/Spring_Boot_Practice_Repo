@@ -1,0 +1,13 @@
+package com.ditypes;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class SpringcoreDependencyinjectiondemo12Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringcoreDependencyinjectiondemo12Application.class, args);
+	}
+
+}
