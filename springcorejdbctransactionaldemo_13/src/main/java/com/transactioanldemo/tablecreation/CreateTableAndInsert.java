@@ -12,7 +12,7 @@ public class CreateTableAndInsert {
 
         String url = "jdbc:mysql://localhost:3306/springcoredemo";
         String username = "root";
-        String password = "@nkit07";
+        String password = "Ankit07%";
 
         try {
     

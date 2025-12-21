@@ -12,7 +12,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@ComponentScan(basePackages = "com.example.transactioanldemo")
+@ComponentScan(basePackages = "com.transactioanldemo")
 @EnableTransactionManagement
 public class SpringConfigfile {
 
@@ -20,9 +20,9 @@ public class SpringConfigfile {
     public DriverManagerDataSource addDMD() {
         DriverManagerDataSource add = new DriverManagerDataSource();
         add.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        add.setUrl("jdbc:mysql://localhost:3306/hrdept");
+        add.setUrl("jdbc:mysql://localhost:3306/springcoredemo");
         add.setUsername("root");
-        add.setPassword("password");
+        add.setPassword("Ankit07%");
         return add;
     }
 
