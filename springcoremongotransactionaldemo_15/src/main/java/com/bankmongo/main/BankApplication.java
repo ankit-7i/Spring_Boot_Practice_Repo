@@ -18,6 +18,7 @@ public class BankApplication {
 
         MongoCollection<Document> users = db.getCollection("users");
 
+        @SuppressWarnings("resource")
         Scanner sc = new Scanner(System.in);
 
         while (true) {
