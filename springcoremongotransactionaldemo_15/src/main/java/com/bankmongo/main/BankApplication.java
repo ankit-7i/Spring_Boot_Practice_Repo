@@ -1,31 +1,35 @@
 package com.bankmongo.main;
 
-import java.util.Scanner;
 import com.bankmongo.config.MongoConfig;
-import com.bankmongo.model.BankUser;
 import com.bankmongo.service.BankService;
 import com.bankmongo.util.BankUtil;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
+
+import java.util.Scanner;
 
 public class BankApplication {
 
     public static void main(String[] args) {
 
-        @SuppressWarnings("resource")
-        Scanner sc = new Scanner(System.in);
-        var db = MongoConfig.getDatabase();
+        MongoDatabase db = MongoConfig.getDatabase();
         BankService service = new BankService(db);
-        MongoCollection<BankUser> users = db.getCollection("users", BankUser.class);
+
+        MongoCollection<Document> users = db.getCollection("users");
+
+        Scanner sc = new Scanner(System.in);
 
         while (true) {
             System.out.println("""
-                \n--- BANK MENU ---
-                1. Create Account
-                2. Deposit
-                3. Transfer
-                4. Check Balance
-                5. Exit
-                """);
+                    
+                    --- BANK MENU ---
+                    1. Create Account
+                    2. Deposit
+                    3. Transfer
+                    4. Check Balance
+                    5. Exit
+                    """);
 
             System.out.print("Choose: ");
             int choice = sc.nextInt();
@@ -33,38 +37,68 @@ public class BankApplication {
             switch (choice) {
 
                 case 1 -> {
-                    BankUser u = new BankUser();
-                    System.out.print("First Name: "); u.setFirstName(sc.next());
-                    System.out.print("Last Name: "); u.setLastName(sc.next());
-                    System.out.print("DOB(YYYY-MM-DD): "); u.setDob(sc.next());
-                    System.out.print("Mobile: "); u.setMobile(sc.next());
-                    System.out.print("Aadhar: "); u.setAadhar(sc.next());
-                    System.out.print("Address: "); u.setAddress(sc.next());
-                    System.out.print("Zip: "); u.setZip(sc.next());
+                    System.out.print("First Name: ");
+                    String firstName = sc.next();
 
-                    u.setAccountNo(BankUtil.generateAccountNo());
-                    u.setUsername(BankUtil.generateUsername(u.getFirstName(), u.getDob()));
-                    u.setPassword(BankUtil.generatePassword());
-                    u.setBalance(0);
+                    System.out.print("Last Name: ");
+                    String lastName = sc.next();
 
-                    users.insertOne(u);
+                    System.out.print("DOB (YYYY-MM-DD): ");
+                    String dob = sc.next();
 
-                    System.out.println("✅ Account Created");
-                    System.out.println("Account No: " + u.getAccountNo());
-                    System.out.println("Username: " + u.getUsername());
-                    System.out.println("Password: " + u.getPassword());
+                    System.out.print("Mobile: ");
+                    String mobile = sc.next();
+
+                    System.out.print("Aadhar: ");
+                    String aadhar = sc.next();
+
+                    System.out.print("Address: ");
+                    String address = sc.next();
+
+                    System.out.print("Zip: ");
+                    String zip = sc.next();
+
+                    String accountNo = BankUtil.generateAccountNo();
+                    String username = BankUtil.generateUsername(firstName, dob);
+                    String password = BankUtil.generatePassword();
+
+                    Document userDoc = new Document()
+                            .append("accountNo", accountNo)
+                            .append("firstName", firstName)
+                            .append("lastName", lastName)
+                            .append("dob", dob)
+                            .append("mobile", mobile)
+                            .append("aadhar", aadhar)
+                            .append("address", address)
+                            .append("zip", zip)
+                            .append("username", username)
+                            .append("password", password)
+                            .append("balance", 0.0);
+
+                    users.insertOne(userDoc);
+
+                    System.out.println("✅ Account Created Successfully");
+                    System.out.println("Account No : " + accountNo);
+                    System.out.println("Username   : " + username);
+                    System.out.println("Password   : " + password);
                 }
 
                 case 2 -> {
                     System.out.print("Account No: ");
-                    service.deposit(sc.next(), sc.nextDouble());
+                    String accNo = sc.next();
+                    System.out.print("Amount: ");
+                    double amt = sc.nextDouble();
+                    service.deposit(accNo, amt);
                 }
 
                 case 3 -> {
-                    System.out.print("From Acc: "); String f = sc.next();
-                    System.out.print("To Acc: "); String t = sc.next();
-                    System.out.print("Amount: "); double a = sc.nextDouble();
-                    service.transfer(f, t, a);
+                    System.out.print("From Account: ");
+                    String from = sc.next();
+                    System.out.print("To Account: ");
+                    String to = sc.next();
+                    System.out.print("Amount: ");
+                    double amt = sc.nextDouble();
+                    service.transfer(from, to, amt);
                 }
 
                 case 4 -> {
@@ -73,7 +107,7 @@ public class BankApplication {
                 }
 
                 case 5 -> {
-                    System.out.println("🙏 Thank You");
+                    System.out.println("🙏 Thank you for using Bank App");
                     System.exit(0);
                 }
             }

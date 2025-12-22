@@ -1,53 +1,67 @@
 package com.bankmongo.service;
 
-import com.bankmongo.model.BankUser;
-import com.bankmongo.model.TransactionLog;
 import com.bankmongo.util.BankUtil;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import static com.mongodb.client.model.Filters.eq;
+import org.bson.Document;
 
 import java.time.LocalDateTime;
 
+import static com.mongodb.client.model.Filters.eq;
+
 public class BankService {
 
-    private final MongoCollection<BankUser> userCol;
-    private final MongoCollection<TransactionLog> logCol;
+    private final MongoCollection<Document> userCol;
+    private final MongoCollection<Document> logCol;
 
     public BankService(MongoDatabase db) {
-        userCol = db.getCollection("users", BankUser.class);
-        logCol = db.getCollection("transaction_logs", TransactionLog.class);
+        this.userCol = db.getCollection("users");
+        this.logCol = db.getCollection("transaction_logs");
     }
 
     // ✅ Deposit
     public void deposit(String accNo, double amount) {
 
-        BankUser user = userCol.find(eq("accountNo", accNo)).first();
-        double oldBalance = user.getBalance();
+        Document user = userCol.find(eq("accountNo", accNo)).first();
+
+        if (user == null) {
+            System.out.println("❌ Account not found");
+            return;
+        }
+
+        double oldBalance = user.getDouble("balance");
 
         try {
-            user.setBalance(oldBalance + amount);
+            user.put("balance", oldBalance + amount);
             userCol.replaceOne(eq("accountNo", accNo), user);
 
             log("NA", accNo, amount, "DEPOSIT", "SUCCESS", "Deposited");
-
             System.out.println("✅ Amount Deposited");
 
         } catch (Exception e) {
-            user.setBalance(oldBalance);
+
+            // Manual rollback
+            user.put("balance", oldBalance);
             userCol.replaceOne(eq("accountNo", accNo), user);
+
             log("NA", accNo, amount, "DEPOSIT", "FAILED", e.getMessage());
+            System.out.println("❌ Deposit Failed");
         }
     }
 
     // 🔁 Transfer with Manual Rollback
     public void transfer(String fromAcc, String toAcc, double amount) {
 
-        BankUser from = userCol.find(eq("accountNo", fromAcc)).first();
-        BankUser to = userCol.find(eq("accountNo", toAcc)).first();
+        Document from = userCol.find(eq("accountNo", fromAcc)).first();
+        Document to = userCol.find(eq("accountNo", toAcc)).first();
 
-        double fromOld = from.getBalance();
-        double toOld = to.getBalance();
+        if (from == null || to == null) {
+            System.out.println("❌ Invalid account number");
+            return;
+        }
+
+        double fromOld = from.getDouble("balance");
+        double toOld = to.getDouble("balance");
 
         try {
             if (amount > 100000)
@@ -56,13 +70,16 @@ public class BankService {
             if (fromOld < amount)
                 throw new RuntimeException("Insufficient balance");
 
-            from.setBalance(fromOld - amount);
+            // debit
+            from.put("balance", fromOld - amount);
             userCol.replaceOne(eq("accountNo", fromAcc), from);
 
+            // simulate failure
             if (amount > 50000)
-                throw new RuntimeException("System failure");
+                throw new RuntimeException("System failure during transfer");
 
-            to.setBalance(toOld + amount);
+            // credit
+            to.put("balance", toOld + amount);
             userCol.replaceOne(eq("accountNo", toAcc), to);
 
             log(fromAcc, toAcc, amount, "TRANSFER", "SUCCESS", "Completed");
@@ -71,8 +88,9 @@ public class BankService {
         } catch (Exception e) {
 
             // 🔥 MANUAL ROLLBACK
-            from.setBalance(fromOld);
-            to.setBalance(toOld);
+            from.put("balance", fromOld);
+            to.put("balance", toOld);
+
             userCol.replaceOne(eq("accountNo", fromAcc), from);
             userCol.replaceOne(eq("accountNo", toAcc), to);
 
@@ -81,23 +99,32 @@ public class BankService {
         }
     }
 
+    // ✅ Check Balance
     public void checkBalance(String accNo) {
-        BankUser user = userCol.find(eq("accountNo", accNo)).first();
-        System.out.println("💰 Balance: " + user.getBalance());
+
+        Document user = userCol.find(eq("accountNo", accNo)).first();
+
+        if (user == null) {
+            System.out.println("❌ Account not found");
+            return;
+        }
+
+        System.out.println("💰 Balance: " + user.getDouble("balance"));
     }
 
+    // ✅ Transaction Log
     private void log(String from, String to, double amt,
                      String type, String status, String reason) {
 
-        TransactionLog log = new TransactionLog();
-        log.setTxId(BankUtil.generateTxId());
-        log.setFromAcc(from);
-        log.setToAcc(to);
-        log.setAmount(amt);
-        log.setType(type);
-        log.setStatus(status);
-        log.setReason(reason);
-        log.setTime(LocalDateTime.now());
+        Document log = new Document()
+                .append("txId", BankUtil.generateTxId())
+                .append("fromAcc", from)
+                .append("toAcc", to)
+                .append("amount", amt)
+                .append("type", type)
+                .append("status", status)
+                .append("reason", reason)
+                .append("time", LocalDateTime.now().toString());
 
         logCol.insertOne(log);
     }
