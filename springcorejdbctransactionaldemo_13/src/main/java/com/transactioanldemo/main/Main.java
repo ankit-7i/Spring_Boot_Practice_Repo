@@ -15,7 +15,7 @@ public class Main {
                 new AnnotationConfigApplicationContext(SpringConfigfile.class);
 
         BankService bankService = con.getBean(BankService.class);
-        bankService.tranferMoney(101, 102, 50000);
+        bankService.tranferMoney(101, 102, 6000);
 
         System.out.println("Transaction successfully completed");
     }
