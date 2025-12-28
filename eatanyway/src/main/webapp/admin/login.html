@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Login</title>
+</head>
+<body>
+
+<h2>Admin Login</h2>
+
+<form method="post" action="/eatanyway/admin/login">
+    Email: <input type="email" name="email" required><br><br>
+    Password: <input type="password" name="password" required><br><br>
+    <button type="submit">Login</button>
+</form>
+
+<p style="color:red">${error}</p>
+
+<a href="/eatanyway/admin/signup">Create Account</a>
+
+</body>
+</html>
