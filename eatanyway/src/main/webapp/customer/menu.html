@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Eat AnyWay Menu</title>
+
+    <script>
+        function loadMenu(categoryId) {
+            fetch('/eatanyway/menu/category/' + categoryId)
+                .then(res => res.json())
+                .then(data => {
+                    let html = '';
+
+                    data.forEach(item => {
+                        html += `
+                            <p>
+                                ${item.name} - ₹${item.price}
+                                <button onclick="addToCart(${item.itemId}, '${item.name}', ${item.price})">
+                                    Add
+                                </button>
+                            </p>
+                        `;
+                    });
+
+                    document.getElementById("menu").innerHTML = html;
+                })
+                .catch(err => console.error(err));
+        }
+
+        function addToCart(id, name, price) {
+            fetch('/eatanyway/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `itemId=${id}&name=${name}&price=${price}`
+            })
+            .then(() => alert("Added to cart"))
+            .catch(err => console.error(err));
+        }
+    </script>
+</head>
+
+<body>
+
+<h2>Menu</h2>
+
+<ul>
+    <li th:each="c : ${categories}">
+        <a href="javascript:void(0)"
+           th:onclick="|loadMenu(${c.categoryId})|">
+            <span th:text="${c.name}"></span>
+        </a>
+    </li>
+</ul>
+
+<div id="menu"></div>
+
+</body>
+</html>

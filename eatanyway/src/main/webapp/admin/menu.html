@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Menu Management</title>
+</head>
+<body>
+
+<h2>Menu Management</h2>
+
+<h3>Add Category</h3>
+<form method="post" action="/eatanyway/admin/menu/category">
+    <input type="text" name="name" required>
+    <button>Add Category</button>
+</form>
+
+<h3>Add Menu Item</h3>
+<form method="post" action="/eatanyway/admin/menu/item">
+    Name: <input name="name" required><br>
+    Price: <input name="price" required><br>
+    Category ID: <input name="categoryId" required><br>
+    <button>Add Item</button>
+</form>
+
+</body>
+</html>
